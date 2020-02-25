@@ -1,0 +1,22 @@
+{
+  "name": "que-veo-hoy-recursos",
+  "version": "1.0.0",
+  "description": "buscandoPeliculas",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Gonzalezenios/Que-veo-hoy.git"
+  },
+  "author": "Enio González",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Gonzalezenios/Que-veo-hoy/issues"
+  },
+  "homepage": "https://github.com/Gonzalezenios/Que-veo-hoy#readme",
+  "dependencies": {
+    "express": "^4.17.1"
+  }
+}
