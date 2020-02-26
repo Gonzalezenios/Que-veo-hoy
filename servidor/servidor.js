@@ -14,7 +14,8 @@ app.use(bodyParser.urlencoded({
 
 app.use(bodyParser.json());
 
-//ejemplo para saber como referenciar el controlador
+//referenciar el controlador peliculas - Enio
+app.get('/peliculas?', controlador.peliculas);
 app.get('/saludar', controlador.saludar);
 
 //seteamos el puerto en el cual va a escuchar los pedidos la aplicación

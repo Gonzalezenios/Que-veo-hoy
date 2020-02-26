@@ -1,3 +1,16 @@
+//funcion para devolver las peliculas
+function obtenerPeliculas (req,res) {
+    var peliculas = req.query.peliculas;
+
+
+    res.send(peliculas);
+}
+
+module.exports ={
+    obtenerPeliculas : obtenerPeliculas
+};
+
+
 //ejemplo de como diseñar el controlador
 
 function saludar (req, res) {
@@ -22,7 +35,7 @@ function saludar (req, res) {
     meses[10] = 'Noviembre';
     meses[11] = 'Diciembre';    
     var mes_nombre = meses[mes];
-    res.send('Hola '+nombre+', hoy es'+dia+' de '+mes_nombre+' de '+año);
+    res.send('Hola '+nombre+', hoy es'+dia+' de '+ mes_nombre+' de '+año);
 }
 
 module.exports = {
