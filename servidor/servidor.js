@@ -15,8 +15,7 @@ app.use(bodyParser.urlencoded({
 app.use(bodyParser.json());
 
 //referenciar el controlador peliculas - Enio
-app.get('/peliculas?', controlador.peliculas);
-app.get('/saludar', controlador.saludar);
+app.get('/peliculas?', controlador.obtenerPeliculas)
 
 //seteamos el puerto en el cual va a escuchar los pedidos la aplicación
 var puerto = '8080';
