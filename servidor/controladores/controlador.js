@@ -1,14 +1,11 @@
 //importar la conexion a la base de datos -Enio
-var conexion = require('../lib/conexionbd');
+const conexion = require('../lib/conexionbd');
 
 //funcion para devolver las peliculas - Enio
-function obtenerPeliculas(req, res) {
-    //var peliculas = req.query.peliculas;
+obtenerPeliculas = (req, res) => {
     conexion.connect()
-
-    console.log("conectado!")
     // se obtiene el query param peliculas
-    var sql = 'select * from peliculas;'
+    var sql = 'select * from pelicula;'
     
     conexion.query(sql, function (error, resultado, fields) {
         if (error) {
