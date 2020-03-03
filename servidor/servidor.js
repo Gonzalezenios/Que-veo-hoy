@@ -3,6 +3,9 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const controlador = require('./controladores/controlador');
+const controladorGeneros = require('./controladores/controladorGeneros.js');
+const controladorId = require('./controladores/controladorId.js');
+const controladorRecomendaciones = require('./controladores/controladorRecomendaciones.js');
 
 const app = express();
 
@@ -14,8 +17,11 @@ app.use(bodyParser.urlencoded({
 
 app.use(bodyParser.json());
 
-//referenciar el controlador peliculas - Enio
-app.get('/peliculas', controlador.obtenerPeliculas)
+//Pedidos de distintas rutas - Enio
+app.get('/peliculas', controlador.obtenerPeliculas);
+app.get('/peliculas/recomendacion', controladorRecomendaciones.recomendarPelicula);
+app.get('/peliculas/:id', controladorId.obtenerPorId);
+app.get('/generos', controladorGeneros.obtenerGeneros);
 
 //seteamos el puerto en el cual va a escuchar los pedidos la aplicación
 const puerto = '8080';

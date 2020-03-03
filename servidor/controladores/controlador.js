@@ -1,161 +1,80 @@
-//importar la conexion a la base de datos -Enio
-const conexion = require('../lib/conexionbd');
+const con = require('../lib/conexionbd.js');
 
-//funcion para devolver las peliculas - Enio
-obtenerPeliculas = (req, res) => {
-    conexion.connect()
+    //Enio
+const obtenerPeliculas = (req, res) => {
+    let sql = "SELECT * FROM pelicula WHERE 1=1";
 
-    // se obtiene el query param peliculas
-    //let sql = 'select * from pelicula;'
-    let query = 'select * from pelicula;'
+    let anio = req.query.anio; // Anio de realización de la película.
+    let titulo = req.query.titulo; // Titulo de la película.
+    let genero = req.query.genero; // Género de la peliícula.
+    let columna_orden = req.query.columna_orden; // Columna por la que se ordena el resultado.
+    let pagina = req.query.pagina; // Número de página.
+    let cantidad = req.query.cantidad; // Cantidad de resultados por página.
 
-    const anio = req.query.anio;
-    const titulo = req.query.titulo;
-    const genero = req.query.genero;
-    const orden = req.query.columna_orden;
-    const pagina = req.query.pagina;
-    const cantidad = req.query.cantidad;
+    let limite = `${(pagina -1) * cantidad}, ${cantidad}`; // Cálculo para cantidad de resultados por página.
+    let sqlTotal = "SELECT COUNT(*) AS total FROM pelicula WHERE 1=1"; // Query para obtener total de resultados enviados.
 
-    //se filtra por titulo, genero y año
-    (titulo && genero && anio) ? query += ` WHERE genero_id = ${genero} AND titulo LIKE "\%${titulo}\%" AND anio = ${anio}`: false;
+    // Se filtra por título y/o género y/o anio. //
+    if (titulo) {
+        sql += ` AND titulo LIKE "\%${titulo}\%"`;
+        sqlTotal += ` AND titulo LIKE "\%${titulo}\%"`;
+    };
 
-    (titulo && !genero && anio) ? query += ` WHERE titulo LIKE "\%${titulo}\%" AND anio = ${anio}`: false;
-    (titulo && genero && !anio) ? query += ` WHERE genero_id = ${genero} AND titulo LIKE "\%${titulo}\%"`: false;
-    (!titulo && genero && anio) ? query += ` WHERE genero_id = ${genero} AND anio = ${anio}`: false;
+    if (genero) {
+        sql += ` AND genero_id = ${genero}`;
+        sqlTotal += ` AND genero_id = ${genero}`;
+    };
 
-    (genero && !titulo && !anio) ? query += ` WHERE genero_id = ${genero}`: false;
-    (titulo && !genero && !anio) ? query += ` WHERE titulo LIKE "\%${titulo}\%"`: false;
-    (anio && !titulo && !genero) ? query += ` WHERE anio = ${anio}`: false;
+    if (anio) {
+        sql += ` AND anio = ${anio}`;
+        sqlTotal += ` AND anio = ${anio}`;
+    };
 
-    //Orden
-    switch (orden) {
+    // Se ordena según el criterio pedido por el usuario. //
+    switch (columna_orden) {
         case 'titulo':
-            query += ` ORDER BY titulo `
+            sql += ` ORDER BY titulo`
             break;
         case 'anio':
-            query += ` ORDER BY anio`
+            sql += ` ORDER BY anio DESC`
             break;
         case 'puntuacion':
-            query += ` ORDER BY puntuacion`
+            sql += ` ORDER BY puntuacion DESC`
             break;
         default:
             break;
     };
 
-    conexion.query(query, (error, resultado) => {
+    // Se limita la cantidad de resultados por página. //
+    if (pagina && cantidad) {
+        sql += ` LIMIT ${limite}`;
+    }
 
-        let limitedQuery = query += ` LIMIT ${(limite) * cantidad},${cantidad}`;
-        conexion.query(limitedQuery, (error_, resultado_) => {
-
-            let peliculas = {
-                peliculas: resultado_,
-                total: resultado.length,
-                
-            }
-
-            if (error) {
-                console.log('No funciona');
-                console.log(error_);
-    
-            } else {
-                res.send(peliculas)      
-            }
-        })
-    })
-}
-
-generos = (req, res) =>{
-    let query = 'SELECT * FROM genero;'
-
-    conexion.query(query, (error, resultado) =>{
-
-        let generos = {
-            generos: resultado,
-        }
-
+    // Se realiza la consulta. //
+    con.query(sql, (error, resultado, fields) => {
         if (error) {
-            console.log('No funciona');
-            console.log(err);
-
-        } else {
-            res.send(generos)
-        }
-    })
-}
-
-infoPeliculas = (req, res) => {
-    const id = req.params.id;
-    let query = 'SELECT * FROM pelicula JOIN genero ON genero_id = genero.id WHERE pelicula.id = ${id}'
-
-    conexion.query(query, (error, resultado) => {
-
-        if (error) {
-            console.log ('No funciona 2');
-            console.log(error);
-
-        } else {
-            query = 'SELECT * FROM actor_pelicula JOIN actor_id = actor.id WHERE pelicula.id = ${id}'
-
-            conexion.query(query, (_error, _resultado) => {
-
-                if (_error) {
-                    console.log('No funciona 3');
-                    console.log(_err);
-
-                } else {
-                    var data = {
-                        pelicula: resultado[0],
-                        actores: _resultado
-                    };
-
-                    res.send(data);
-
-
-                }
-            })
-        }
-    })
-}
-
-seguerenciaPeliculas = (req, res) => {
-    const genero = req.query.genero;
-    const anio_inicio = req.query.anio_inicio;
-    const anio_fin = req.query.anio_fin;
-    const puntuacion = req.query.puntuacion;
-
-
-    //Query por defecto
-    let query = "SELECT pelicula.*, genero.nombre FROM pelicula JOIN genero ON pelicula.genero_id = genero.id";
-    //Si tengo seleccionado un genero 
-    (genero) ? query += ` where genero.nombre = '${genero}'` : false;
-    //Si tengo seleccionado un genero y 'Estreno' o 'Clásica'
-    (anio_inicio && anio_fin && genero) ? query += ` and anio BETWEEN '${anio_inicio}' and '${anio_fin}'` : false;
-    //Si tengo seleccionado 'Estreno' o 'Clásica' pero sin genero en particular
-    (anio_inicio && anio_fin && !genero) ? query += ` WHERE anio BETWEEN '${anio_inicio}' and '${anio_fin}'` : false;
-    //Si tengo seleccionado un genero y puntuación
-    (puntuacion && genero) ? query += ` and puntuacion >= ${puntuacion}` : false;
-    //Si tengo seleccionado puntuación pero sin género
-    (puntuacion && !genero) ? query += ` WHERE puntuacion >= ${puntuacion}` : false;
-
-    console.log(query);
-
-    conexion.query(query, (error, resultado) => {
-        if (error) {
-            console.log('Hubo un error en la consulta', error.message);
-            return res.status(500).send('Hubo un error en la consulta');
-        }
-        const response = {
-            'peliculas': resultado
+            console.log("Hubo un error en la consulta.", error.message);
+            return res.status(404).send("Hubo un error en la consulta.");
         };
 
-        res.send(JSON.stringify(response));
-    })
-}
+        let response = {
+            peliculas: resultado,
+            total: ""
+        };
 
-//Se expportan las funciones creadas - Enio
+        // Se realiza la consulta para obtener total de resultados enviados. //
+        con.query(sqlTotal, (errorTotal, resultadoTotal, fieldsTotal) => {
+            if (errorTotal) {
+                console.log("Hubo un error en la consulta.", errorTotal.message);
+                return res.status(404).send("Hubo un error en la consulta.");
+            };
+
+            response.total = resultadoTotal[0].total;
+            res.send(JSON.stringify(response));
+        });
+    });
+};
+
 module.exports = {
-    obtenerPeliculas: obtenerPeliculas,
-    generos: generos,
-    infoPeliculas: infoPeliculas,
-    seguerenciaPeliculas: seguerenciaPeliculas
+    obtenerPeliculas: obtenerPeliculas
 };
