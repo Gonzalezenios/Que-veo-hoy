@@ -24,7 +24,7 @@
      if (puntuacion) {
          sql += ` AND puntuacion >= ${puntuacion}`
      };
-
+     console.log(sql);
      // Se realiza la consulta. //
      con.query(sql, (error, resultado, fields) => {
          if (error) {
@@ -36,7 +36,7 @@
          let response = {
              peliculas: resultado
          }
-
+         console.log(response)
          res.send(JSON.stringify(response));
      })
 

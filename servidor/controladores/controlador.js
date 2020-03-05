@@ -2,7 +2,7 @@ const con = require('../lib/conexionbd.js');
 
     //Enio
 const obtenerPeliculas = (req, res) => {
-    let sql = "SELECT * FROM pelicula WHERE 1=1";
+    let sql = "SELECT * FROM pelicula WHERE id=id";
 
     let anio = req.query.anio; // Anio de realización de la película.
     let titulo = req.query.titulo; // Titulo de la película.
@@ -12,7 +12,7 @@ const obtenerPeliculas = (req, res) => {
     let cantidad = req.query.cantidad; // Cantidad de resultados por página.
 
     let limite = `${(pagina -1) * cantidad}, ${cantidad}`; // Cálculo para cantidad de resultados por página.
-    let sqlTotal = "SELECT COUNT(*) AS total FROM pelicula WHERE 1=1"; // Query para obtener total de resultados enviados.
+    let sqlTotal = "SELECT COUNT(*) AS total FROM pelicula WHERE id=id"; // Query para obtener total de resultados enviados.
 
     // Se filtra por título y/o género y/o anio. //
     if (titulo) {
