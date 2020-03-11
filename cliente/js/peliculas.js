@@ -36,6 +36,7 @@ function ControladorPeliculas() {
             var genero = $(".genero-select option:selected").attr("value");
             var orden = $(".orden-select option:selected").attr("value");
             var anio = $(".anio-busqueda").val();
+            var director = $(".director-busqueda").val();
             
             //si se recibio como parametro el numero de pagina se envia ese valor, sino, se pide la pagina 1
             var pagina_solicitada = (pagina) ? pagina : 1;
@@ -58,6 +59,10 @@ function ControladorPeliculas() {
             //solo se envia el parametro año si hay algun valor para filtrar por ese campo
             if (anio) {
                 query_params.anio = anio;
+            }
+
+            if (director) {
+                query_params.director = director;
             }
 
             //si se recibio como parametro la cantidad de resultados a mostrar se envia ese valor, sino, se piden 52 peliculas
